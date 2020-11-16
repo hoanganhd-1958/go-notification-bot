@@ -1,17 +1,54 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"gopkg.in/go-playground/webhooks.v5/gitlab"
 )
 
-const (
+// RepsonseData is ...
+type RepsonseData struct {
+	Response string
+	Message  string
+}
+
+// Config is ...
+type Config struct {
+	ChatworkToken string
+	RoomID        string
+	ListenPort    string
+}
+
+var (
 	path = "/"
 )
 
+var (
+	rs       = RepsonseData{Response: "", Message: ""}
+	config   = &Config{}
+	response string
+)
+
+func handleError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func loadConfig() *Config {
+	conf := Config{}
+	content, e := ioutil.ReadFile("./config.json")
+	handleError(e)
+	err := json.Unmarshal(content, &conf)
+	handleError(err)
+	return &conf
+}
+
 func main() {
+	config = loadConfig()
 	hook, _ := gitlab.New(gitlab.Options.Secret("hoanganhd"))
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		payload, err := hook.Parse(r, gitlab.MergeRequestEvents, gitlab.PipelineEvents)
@@ -33,5 +70,5 @@ func main() {
 			fmt.Printf("%+v", pipeline)
 		}
 	})
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(config.ListenPort, nil)
 }
