@@ -20,13 +20,11 @@ type Config struct {
 	ChatworkToken string
 	RoomID        string
 	ListenPort    string
+	SecretToken   string
 }
 
 var (
-	path = "/"
-)
-
-var (
+	path     = "/"
 	rs       = RepsonseData{Response: "", Message: ""}
 	config   = &Config{}
 	response string
@@ -49,7 +47,7 @@ func loadConfig() *Config {
 
 func main() {
 	config = loadConfig()
-	hook, _ := gitlab.New(gitlab.Options.Secret("hoanganhd"))
+	hook, _ := gitlab.New(gitlab.Options.Secret(config.SecretToken))
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		payload, err := hook.Parse(r, gitlab.MergeRequestEvents, gitlab.PipelineEvents)
 		if err != nil {
