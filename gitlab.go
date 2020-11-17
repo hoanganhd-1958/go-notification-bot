@@ -48,10 +48,10 @@ func loadConfig() *Config {
 }
 
 func sendMessageToChatwork(body string) {
-	apiUrl := "https://api.chatwork.com/"
+	apiURL := "https://api.chatwork.com/"
 	resource := "/v2/rooms/" + config.RoomID + "/messages"
 
-	u, _ := url.ParseRequestURI(apiUrl)
+	u, _ := url.ParseRequestURI(apiURL)
 	u.Path = resource
 	urlStr := fmt.Sprintf("%v", u)
 
@@ -77,7 +77,7 @@ func sendMessageToChatwork(body string) {
 
 func main() {
 	config = loadConfig()
-	sendMessageToChatwork("[toall]")
+	sendMessageToChatwork("[toall]\n")
 	hook, _ := gitlab.New(gitlab.Options.Secret(config.SecretToken))
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		payload, err := hook.Parse(r, gitlab.MergeRequestEvents, gitlab.PipelineEvents)
@@ -88,15 +88,17 @@ func main() {
 		}
 		switch payload.(type) {
 
-		case gitlab.MergeRequestEventPayload:
-			mergeRequest := payload.(gitlab.MergeRequestEventPayload)
-			// Do whatever you want from here...
-			fmt.Printf("%+v", mergeRequest)
+		// case gitlab.MergeRequestEventPayload:
+		// 	mergeRequest := payload.(gitlab.MergeRequestEventPayload)
+		// 	// Do whatever you want from here...
+		// 	fmt.Printf("%+v", mergeRequest)
 
 		case gitlab.PipelineEventPayload:
 			pipeline := payload.(gitlab.PipelineEventPayload)
 			// Do whatever you want from here...
-			fmt.Printf("%+v", pipeline)
+
+			fmt.Printf("%+v\n", pipeline.ObjectAttributes.Status)
+			fmt.Printf("%+v\n", pipeline.MergeRequest.URL)
 		}
 	})
 	http.ListenAndServe(config.ListenPort, nil)

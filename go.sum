@@ -1,2 +1,6 @@
+github.com/gogits/go-gogs-client v0.0.0-20200905025246-8bb8a50cb355 h1:HTVNOdTWO/gHYeFnr/HwpYwY6tgMcYd+Rgf1XrHnORY=
+github.com/gogits/go-gogs-client v0.0.0-20200905025246-8bb8a50cb355/go.mod h1:cY2AIrMgHm6oOHmR7jY+9TtjzSjQ3iG7tURJG3Y6XH0=
+github.com/hoanganhd-1958/webhooks v5.16.0+incompatible h1:4ovr6snZL1D7y758ONqDa8SkQR06FOv9ySyRqTw++xA=
+github.com/hoanganhd-1958/webhooks v5.16.0+incompatible/go.mod h1:nECNA434lT1nAqxZi9zuy6meg2QJ+X7d7gd7Iwy4eRo=
 gopkg.in/go-playground/webhooks.v5 v5.16.0 h1:+7ssQrjaZaul/VqUXXLdSwUwrCKDn6dwi3nn0jZY8+4=
 gopkg.in/go-playground/webhooks.v5 v5.16.0/go.mod h1:LZbya/qLVdbqDR1aKrGuWV6qbia2zCYSR5dpom2SInQ=
