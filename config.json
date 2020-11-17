@@ -1,6 +1,6 @@
 {
-    "ChatworkToken": "token",
-    "RoomID": "token",
+    "ChatworkToken": "ab73438f3becb7d105b6573c7d65dbb1",
+    "RoomID": "193188240",
     "ListenPort": ":3000",
     "SecretToken": "hoanganhd"
 }
