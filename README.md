@@ -1,2 +1,2 @@
 # go-notification-bot
-A notification bot
+A notification bot for gitlab
