@@ -137,7 +137,9 @@ func main() {
 			pullRequestTitle := pipeline.MergeRequest.Title
 			message := makeMessage(chatwork, pullRequestTitle, mergeUrl, CIStatus)
 
-			sendMessageToChatwork(message)
+			if CIStatus == "success" || CIStatus == "failed" {
+				sendMessageToChatwork(message)
+			}
 		}
 	})
 	http.ListenAndServe(config.ListenPort, nil)
