@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"gopkg.in/go-playground/webhooks.v5/gitlab"
+	"github.com/hoanganhd-1958/webhooks/gitlab"
 )
 
 // RepsonseData is ...
@@ -23,6 +23,11 @@ type Config struct {
 	RoomID        string
 	ListenPort    string
 	SecretToken   string
+}
+
+type MemberInfo struct {
+	Email    string `json:"email"`
+	Chatwork string `json:"chatwork"`
 }
 
 var (
@@ -75,30 +80,63 @@ func sendMessageToChatwork(body string) {
 	fmt.Println(urlStr)
 }
 
+func findChatworkOfMember(slice []MemberInfo, val string) (int, string) {
+	for i, item := range slice {
+		if item.Email == val {
+			return i, item.Chatwork
+		}
+	}
+	return -1, ""
+}
+
+func fetchMemberInfoFromGGSheet() []MemberInfo {
+	resp, err := http.Get("https://script.google.com/macros/s/AKfycbwEN2hLfeuWsWUvozfOLFZUAjzdFWInsBbG5E5nL6Nx-MKxHns/exec")
+	if err != nil {
+		// handle error
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+
+	var memberInfo []MemberInfo
+	json.Unmarshal(body, &memberInfo)
+
+	return memberInfo
+}
+
+func makeMessage(chatwork string, pullRequestTitle string, mergeUrl string, status string) string {
+	message := "[info][title]CI report " + chatwork + "[/title]" + pullRequestTitle + "\nPull request: " + mergeUrl + "\nStatus: " + status + "[/info]"
+	return message
+}
+
 func main() {
 	config = loadConfig()
-	sendMessageToChatwork("[toall]\n")
+	memberInfo := fetchMemberInfoFromGGSheet()
+
 	hook, _ := gitlab.New(gitlab.Options.Secret(config.SecretToken))
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		payload, err := hook.Parse(r, gitlab.MergeRequestEvents, gitlab.PipelineEvents)
 		if err != nil {
 			if err == gitlab.ErrEventNotFound {
-				// ok event wasn;t one of the ones asked to be parsed
+				// handle error
 			}
 		}
 		switch payload.(type) {
 
 		// case gitlab.MergeRequestEventPayload:
 		// 	mergeRequest := payload.(gitlab.MergeRequestEventPayload)
-		// 	// Do whatever you want from here...
+		// 	// In case merge pull request, do whatever you want from here...
 		// 	fmt.Printf("%+v", mergeRequest)
 
 		case gitlab.PipelineEventPayload:
 			pipeline := payload.(gitlab.PipelineEventPayload)
-			// Do whatever you want from here...
+			CIStatus := pipeline.ObjectAttributes.Status
+			authorEmail := pipeline.Commit.Author.Email
+			_, chatwork := findChatworkOfMember(memberInfo, authorEmail)
+			mergeUrl := pipeline.MergeRequest.URL
+			pullRequestTitle := pipeline.MergeRequest.Title
+			message := makeMessage(chatwork, pullRequestTitle, mergeUrl, CIStatus)
 
-			fmt.Printf("%+v\n", pipeline.ObjectAttributes.Status)
-			fmt.Printf("%+v\n", pipeline.MergeRequest.URL)
+			sendMessageToChatwork(message)
 		}
 	})
 	http.ListenAndServe(config.ListenPort, nil)
