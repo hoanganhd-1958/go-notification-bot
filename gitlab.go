@@ -23,6 +23,7 @@ type Config struct {
 	RoomID        string
 	ListenPort    string
 	SecretToken   string
+	GGSheetAPI    string
 }
 
 type MemberInfo struct {
@@ -90,7 +91,7 @@ func findChatworkOfMember(slice []MemberInfo, val string) (int, string) {
 }
 
 func fetchMemberInfoFromGGSheet() []MemberInfo {
-	resp, err := http.Get("https://script.google.com/macros/s/AKfycbwEN2hLfeuWsWUvozfOLFZUAjzdFWInsBbG5E5nL6Nx-MKxHns/exec")
+	resp, err := http.Get(config.GGSheetAPI)
 	if err != nil {
 		// handle error
 	}
