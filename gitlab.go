@@ -111,11 +111,11 @@ func makeMessage(chatwork string, pullRequestTitle string, mergeUrl string, stat
 
 func main() {
 	config = loadConfig()
-	memberInfo := fetchMemberInfoFromGGSheet()
 
 	hook, _ := gitlab.New(gitlab.Options.Secret(config.SecretToken))
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		payload, err := hook.Parse(r, gitlab.MergeRequestEvents, gitlab.PipelineEvents)
+		memberInfo := fetchMemberInfoFromGGSheet()
 		if err != nil {
 			if err == gitlab.ErrEventNotFound {
 				// handle error
