@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"sync"
-	"time"
 
 	"github.com/hoanganhd-1958/webhooks/gitlab"
 )
@@ -34,12 +32,10 @@ type MemberInfo struct {
 }
 
 var (
-	path       = "/"
-	rs         = RepsonseData{Response: "", Message: ""}
-	config     = &Config{}
-	response   string
-	timeSumsMu sync.RWMutex
-	timeSums   int64
+	path     = "/"
+	rs       = RepsonseData{Response: "", Message: ""}
+	config   = &Config{}
+	response string
 )
 
 func handleError(err error) {
@@ -113,26 +109,12 @@ func makeMessage(chatwork string, pullRequestTitle string, mergeUrl string, stat
 	return message
 }
 
-func runDataLoop() {
-	for {
-		// Within an infinite loop, lock the mutex and
-		// increment our value, then sleep for 1 second until
-		// the next time we need to get a value.
-		timeSumsMu.Lock()
-		timeSums += time.Now().Unix()
-		timeSumsMu.Unlock()
-		time.Sleep(1 * time.Second)
-	}
-}
-
 func main() {
-	go runDataLoop()
 	config = loadConfig()
 	memberInfo := fetchMemberInfoFromGGSheet()
 
 	hook, _ := gitlab.New(gitlab.Options.Secret(config.SecretToken))
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		timeSumsMu.RLock()
 		payload, err := hook.Parse(r, gitlab.MergeRequestEvents, gitlab.PipelineEvents)
 		if err != nil {
 			if err == gitlab.ErrEventNotFound {
