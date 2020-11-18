@@ -1,0 +1,7 @@
+{
+    "ChatworkToken": "xxxxxxxxxxxxxxxxxxxxxxxx",
+    "RoomID": "xxxxxxxxx",
+    "ListenPort": ":8081",
+    "SecretToken": "xxxxxx",
+    "GGSheetAPI": "https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec"
+}
