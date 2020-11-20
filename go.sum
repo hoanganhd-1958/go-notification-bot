@@ -10,6 +10,8 @@ github.com/hoanganhd-1958/webhooks v5.16.0+incompatible h1:4ovr6snZL1D7y758ONqDa
 github.com/hoanganhd-1958/webhooks v5.16.0+incompatible/go.mod h1:nECNA434lT1nAqxZi9zuy6meg2QJ+X7d7gd7Iwy4eRo=
 github.com/hoanganhd-1958/webhooks v6.0.0+incompatible h1:TowT82vdXy70VbZWTc+QtSttblfDvjaEC555QycdHJo=
 github.com/hoanganhd-1958/webhooks v6.0.0+incompatible/go.mod h1:nECNA434lT1nAqxZi9zuy6meg2QJ+X7d7gd7Iwy4eRo=
+github.com/hoanganhd-1958/webhooks v6.1.0+incompatible h1:oiKKnpdczmSWjsQRcHW9XpCII8M5ySKoaxVjGIJn6dI=
+github.com/hoanganhd-1958/webhooks v6.1.0+incompatible/go.mod h1:nECNA434lT1nAqxZi9zuy6meg2QJ+X7d7gd7Iwy4eRo=
 github.com/mattn/go-shellwords v1.0.10 h1:Y7Xqm8piKOO3v10Thp7Z36h4FYFjt5xB//6XvOrs2Gw=
 github.com/mattn/go-shellwords v1.0.10/go.mod h1:EZzvwXDESEeg03EKmM+RmDnNOPKG4lLtQsUlTZDWQ8Y=
 gopkg.in/go-playground/webhooks.v5 v5.16.0 h1:+7ssQrjaZaul/VqUXXLdSwUwrCKDn6dwi3nn0jZY8+4=

@@ -106,7 +106,7 @@ func fetchMemberInfoFromGGSheet() []MemberInfo {
 }
 
 func makeMessage(chatwork string, pullRequestTitle string, mergeUrl string, status string) string {
-	message := "[info][title]CI report " + chatwork + "[/title]" + pullRequestTitle + "\nPull request: " + mergeUrl + "\nStatus: " + status + "[/info]"
+	message := "[info][title]CI tool report " + "[To:" + chatwork + "]" + "[/title]" + pullRequestTitle + "Author: " + "[piconname:" + chatwork + "]" + "\nPull request: " + mergeUrl + "\nStatus: " + status + "[/info]"
 	return message
 }
 
@@ -147,7 +147,7 @@ func main() {
 			_, chatwork := findChatworkOfMember(memberInfo, before(authorEmail, "@"))
 			mergeUrl := pipeline.Commit.URL
 			fmt.Println(mergeUrl)
-			pullRequestTitle := pipeline.MergeRequest.Title
+			pullRequestTitle := pipeline.Commit.Title
 			message := makeMessage(chatwork, pullRequestTitle, mergeUrl, CIStatus)
 
 			if CIStatus == "success" || CIStatus == "failed" {
