@@ -64,7 +64,6 @@ func sendMessageToChatwork(body string) {
 
 	data := url.Values{}
 	data.Set("body", body)
-	fmt.Println(data.Encode())
 
 	client := &http.Client{}
 	r, _ := http.NewRequest("POST", urlStr, bytes.NewBufferString(data.Encode()))
@@ -79,7 +78,6 @@ func sendMessageToChatwork(body string) {
 
 	fmt.Println(resp.Status)
 	fmt.Printf("result: %s\n", contents)
-	fmt.Println(urlStr)
 }
 
 func findChatworkOfMember(slice []MemberInfo, val string) (int, string) {
@@ -106,7 +104,7 @@ func fetchMemberInfoFromGGSheet() []MemberInfo {
 }
 
 func makeMessage(chatwork string, pullRequestTitle string, mergeUrl string, status string) string {
-	message := "[info][title]CI tool report " + "[To:" + chatwork + "]" + "[/title]" + pullRequestTitle + "Author: " + "[piconname:" + chatwork + "]" + "\nPull request: " + mergeUrl + "\nStatus: " + status + "[/info]"
+	message := "[info][title]CI tool report[/title]" + pullRequestTitle + "\nAuthor: " + chatwork + "\nCommit URL: " + mergeUrl + "\nStatus: " + status + "[/info]"
 	return message
 }
 
@@ -140,13 +138,10 @@ func main() {
 
 		case gitlab.PipelineEventPayload:
 			pipeline := payload.(gitlab.PipelineEventPayload)
-			fmt.Printf("%+v", pipeline)
 			CIStatus := pipeline.ObjectAttributes.Status
-			fmt.Printf("%+v", CIStatus)
 			authorEmail := pipeline.Commit.Author.Email
 			_, chatwork := findChatworkOfMember(memberInfo, before(authorEmail, "@"))
 			mergeUrl := pipeline.Commit.URL
-			fmt.Println(mergeUrl)
 			pullRequestTitle := pipeline.Commit.Title
 			message := makeMessage(chatwork, pullRequestTitle, mergeUrl, CIStatus)
 
