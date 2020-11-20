@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/hoanganhd-1958/webhooks/gitlab"
 )
@@ -83,7 +84,7 @@ func sendMessageToChatwork(body string) {
 
 func findChatworkOfMember(slice []MemberInfo, val string) (int, string) {
 	for i, item := range slice {
-		if item.Email == val {
+		if before(item.Email, "@") == val {
 			return i, item.Chatwork
 		}
 	}
@@ -109,6 +110,15 @@ func makeMessage(chatwork string, pullRequestTitle string, mergeUrl string, stat
 	return message
 }
 
+func before(value string, a string) string {
+	// Get substring before a string.
+	pos := strings.Index(value, a)
+	if pos == -1 {
+		return ""
+	}
+	return value[0:pos]
+}
+
 func main() {
 	config = loadConfig()
 
@@ -130,10 +140,13 @@ func main() {
 
 		case gitlab.PipelineEventPayload:
 			pipeline := payload.(gitlab.PipelineEventPayload)
+			fmt.Printf("%+v", pipeline)
 			CIStatus := pipeline.ObjectAttributes.Status
+			fmt.Printf("%+v", CIStatus)
 			authorEmail := pipeline.Commit.Author.Email
-			_, chatwork := findChatworkOfMember(memberInfo, authorEmail)
-			mergeUrl := pipeline.MergeRequest.URL
+			_, chatwork := findChatworkOfMember(memberInfo, before(authorEmail, "@"))
+			mergeUrl := pipeline.Commit.URL
+			fmt.Println(mergeUrl)
 			pullRequestTitle := pipeline.MergeRequest.Title
 			message := makeMessage(chatwork, pullRequestTitle, mergeUrl, CIStatus)
 
