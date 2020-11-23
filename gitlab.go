@@ -138,8 +138,10 @@ func main() {
 
 		case gitlab.PipelineEventPayload:
 			pipeline := payload.(gitlab.PipelineEventPayload)
+			fmt.Printf("%+v", pipeline)
 			CIStatus := pipeline.ObjectAttributes.Status
 			authorEmail := pipeline.Commit.Author.Email
+			fmt.Printf("%+v", authorEmail)
 			_, chatwork := findChatworkOfMember(memberInfo, before(authorEmail, "@"))
 			mergeUrl := pipeline.Commit.URL
 			pullRequestTitle := pipeline.Commit.Title
