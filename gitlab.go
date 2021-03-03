@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
+	"os/exec"
 	"strings"
 
 	"github.com/hoanganhd-1958/webhooks/gitlab"
@@ -131,10 +133,17 @@ func main() {
 		}
 		switch payload.(type) {
 
-		// case gitlab.MergeRequestEventPayload:
-		// 	mergeRequest := payload.(gitlab.MergeRequestEventPayload)
-		// 	// In case merge pull request, do whatever you want from here...
-		// 	fmt.Printf("%+v", mergeRequest)
+		case gitlab.MergeRequestEventPayload:
+			//mergeRequest := payload.(gitlab.MergeRequestEventPayload)
+			// In case merge pull request, do whatever you want from here...
+			//fmt.Printf("%+v", mergeRequest)
+
+			cmd := exec.Command("doo deploy", "-c ~/devops_tool/deploy/stg_dwh_sapphire.yml")
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				log.Fatalf("cmd.Run() failed with %s\n", err)
+			}
+			fmt.Printf("combined out:\n%s\n", string(out))
 
 		case gitlab.PipelineEventPayload:
 			pipeline := payload.(gitlab.PipelineEventPayload)
