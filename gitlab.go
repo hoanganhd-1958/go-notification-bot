@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"os/exec"
@@ -125,7 +124,7 @@ func main() {
 	hook, _ := gitlab.New(gitlab.Options.Secret(config.SecretToken))
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		payload, err := hook.Parse(r, gitlab.MergeRequestEvents, gitlab.PipelineEvents)
-		memberInfo := fetchMemberInfoFromGGSheet()
+		// memberInfo := fetchMemberInfoFromGGSheet()
 		if err != nil {
 			if err == gitlab.ErrEventNotFound {
 				// handle error
@@ -137,28 +136,26 @@ func main() {
 			//mergeRequest := payload.(gitlab.MergeRequestEventPayload)
 			// In case merge pull request, do whatever you want from here...
 			//fmt.Printf("%+v", mergeRequest)
+			go func() {
+				cmd := exec.Command("bash", "-c", "doo deploy -c ~/devops_tool/deploy/stg_dwh_sapphire.yml")
+				cmd.Run()
+			}()
+			fmt.Println("DONE!")
 
-			cmd := exec.Command("doo deploy", "-c ~/devops_tool/deploy/stg_dwh_sapphire.yml")
-			out, err := cmd.CombinedOutput()
-			if err != nil {
-				log.Fatalf("cmd.Run() failed with %s\n", err)
-			}
-			fmt.Printf("combined out:\n%s\n", string(out))
+			// case gitlab.PipelineEventPayload:
+			// 	pipeline := payload.(gitlab.PipelineEventPayload)
+			// 	fmt.Printf("%+v", pipeline)
+			// 	CIStatus := pipeline.ObjectAttributes.Status
+			// 	authorEmail := pipeline.Commit.Author.Email
+			// 	fmt.Printf("%+v", authorEmail)
+			// 	_, chatwork := findChatworkOfMember(memberInfo, before(authorEmail, "@"))
+			// 	mergeUrl := pipeline.Commit.URL
+			// 	pullRequestTitle := pipeline.Commit.Title
+			// 	message := makeMessage(chatwork, pullRequestTitle, mergeUrl, CIStatus)
 
-		case gitlab.PipelineEventPayload:
-			pipeline := payload.(gitlab.PipelineEventPayload)
-			fmt.Printf("%+v", pipeline)
-			CIStatus := pipeline.ObjectAttributes.Status
-			authorEmail := pipeline.Commit.Author.Email
-			fmt.Printf("%+v", authorEmail)
-			_, chatwork := findChatworkOfMember(memberInfo, before(authorEmail, "@"))
-			mergeUrl := pipeline.Commit.URL
-			pullRequestTitle := pipeline.Commit.Title
-			message := makeMessage(chatwork, pullRequestTitle, mergeUrl, CIStatus)
-
-			if CIStatus == "success" || CIStatus == "failed" {
-				sendMessageToChatwork(message)
-			}
+			// 	if CIStatus == "success" || CIStatus == "failed" {
+			// 		sendMessageToChatwork(message)
+			// 	}
 		}
 	})
 	http.ListenAndServe(config.ListenPort, nil)
