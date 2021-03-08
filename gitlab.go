@@ -133,15 +133,17 @@ func main() {
 		switch payload.(type) {
 
 		case gitlab.MergeRequestEventPayload:
-			//mergeRequest := payload.(gitlab.MergeRequestEventPayload)
+			mergeRequest := payload.(gitlab.MergeRequestEventPayload)
 			// In case merge pull request, do whatever you want from here...
-			//fmt.Printf("%+v", mergeRequest)
-			go func() {
-				cmd := exec.Command("bash", "-c", "doo deploy -c ~/devops_tool/deploy/stg_dwh_sapphire.yml")
-				cmd.Run()
-			}()
-			fmt.Println("DONE!")
-
+			if mergeRequest.ObjectAttributes.State == "merged" {
+				go func() {
+					cmd := exec.Command("bash", "-c", "doo deploy -c ~/devops_tool/deploy/stg_dwh_sapphire.yml")
+					cmd.Run()
+				}()
+				
+				fmt.Println("DONE!")
+			}
+			
 			// case gitlab.PipelineEventPayload:
 			// 	pipeline := payload.(gitlab.PipelineEventPayload)
 			// 	fmt.Printf("%+v", pipeline)
